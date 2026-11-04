@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 430">
+  <title>RoPE 将位置表示为二维平面上的旋转角</title>
+  <rect width="960" height="430" fill="#fbf9f4"/>
+  <text x="48" y="55" fill="#242420" font-family="monospace" font-size="22">POSITION AS ROTATION</text>
+  <g font-family="sans-serif">
+    <circle cx="300" cy="240" r="125" fill="#f1ede5" stroke="#c9c2b7" stroke-width="2"/>
+    <path d="M155 240 H445 M300 95 V385" stroke="#d7d0c4" stroke-dasharray="5 5"/>
+    <path d="M300 240 V135" stroke="#242420" stroke-width="4"/>
+    <path d="M300 240 393 171" stroke="#b66343" stroke-width="4"/>
+    <path d="M300 240 407 282" stroke="#68675f" stroke-width="4"/>
+    <circle cx="300" cy="240" r="6" fill="#242420"/>
+    <circle cx="300" cy="135" r="7" fill="#242420"/><circle cx="393" cy="171" r="7" fill="#b66343"/><circle cx="407" cy="282" r="7" fill="#68675f"/>
+    <text x="314" y="128" fill="#242420" font-family="monospace" font-size="18">q₀</text>
+    <text x="401" y="160" fill="#b66343" font-family="monospace" font-size="18">qₘ</text>
+    <text x="416" y="294" fill="#68675f" font-family="monospace" font-size="18">kₙ</text>
+    <path d="M324 145 A98 98 0 0 1 371 169" fill="none" stroke="#b66343" stroke-width="3"/>
+    <text x="340" y="137" fill="#b66343" font-family="monospace" font-size="16">mθ</text>
+    <text x="530" y="152" fill="#242420" font-size="24">旋转之后，点积只关心角度差</text>
+    <rect x="530" y="190" width="366" height="86" fill="#f1ede5" stroke="#d7d0c4"/>
+    <text x="556" y="243" fill="#b66343" font-family="monospace" font-size="21">R(mθ)ᵀ R(nθ) = R((n−m)θ)</text>
+    <text x="530" y="320" fill="#68675f" font-size="17">位置 m 和位置 n 的相对关系</text>
+    <text x="530" y="350" fill="#68675f" font-size="17">被自然写进 Query 与 Key 的点积中</text>
+  </g>
+</svg>

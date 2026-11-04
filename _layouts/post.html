@@ -15,8 +15,8 @@ layout: default
       <span class="author-mark" aria-hidden="true"><img src="{{ '/assets/images/pixel-avatar.png' | relative_url }}" alt=""></span>
       <span>{{ site.author.name }}</span>
       <span aria-hidden="true">·</span>
-      {% assign words = content | number_of_words %}
-      {% assign minutes = words | divided_by: 300 | plus: 1 %}
+      {% assign characters = content | strip_html | size %}
+      {% assign minutes = characters | divided_by: 500 | plus: 1 %}
       <span>约 {{ minutes }} 分钟阅读</span>
     </div>
   </header>

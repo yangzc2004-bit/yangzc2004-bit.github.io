@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 430">
+  <title>从正弦位置编码到旋转位置编码的路径</title>
+  <rect width="960" height="430" fill="#fbf9f4"/>
+  <text x="48" y="55" fill="#242420" font-family="monospace" font-size="22">FROM POSITION TO ROTATION</text>
+  <g font-family="sans-serif">
+    <rect x="48" y="100" width="250" height="245" rx="4" fill="#f1ede5" stroke="#d7d0c4"/>
+    <rect x="355" y="100" width="250" height="245" rx="4" fill="#f1ede5" stroke="#d7d0c4"/>
+    <rect x="662" y="100" width="250" height="245" rx="4" fill="#f1ede5" stroke="#d7d0c4"/>
+    <text x="72" y="140" fill="#b66343" font-family="monospace" font-size="14">01 / ABSOLUTE</text>
+    <text x="72" y="177" fill="#242420" font-size="23">正弦位置编码</text>
+    <path d="M72 267 C92 197 112 197 132 267 S172 337 192 267 S232 197 272 247" fill="none" stroke="#b66343" stroke-width="4"/>
+    <path d="M72 267 H274" stroke="#aaa398" stroke-dasharray="4 5"/>
+    <text x="72" y="316" fill="#68675f" font-size="15">把位置向量加到词向量上</text>
+    <text x="379" y="140" fill="#b66343" font-family="monospace" font-size="14">02 / RELATIVE</text>
+    <text x="379" y="177" fill="#242420" font-size="23">关注相对距离</text>
+    <circle cx="424" cy="245" r="24" fill="#242420"/><circle cx="538" cy="245" r="24" fill="#b66343"/>
+    <text x="414" y="252" fill="#fbf9f4" font-family="monospace" font-size="16">m</text><text x="528" y="252" fill="#fbf9f4" font-family="monospace" font-size="16">n</text>
+    <path d="M452 245 H510" stroke="#68675f" stroke-width="2"/><path d="M502 238 514 245 502 252" fill="none" stroke="#68675f" stroke-width="2"/>
+    <text x="435" y="300" fill="#68675f" font-family="monospace" font-size="20">n − m</text>
+    <text x="379" y="329" fill="#68675f" font-size="15">注意力需要知道隔了多远</text>
+    <text x="686" y="140" fill="#b66343" font-family="monospace" font-size="14">03 / ROTARY</text>
+    <text x="686" y="177" fill="#242420" font-size="23">RoPE 旋转位置</text>
+    <circle cx="787" cy="258" r="67" fill="none" stroke="#c9c2b7" stroke-width="2"/>
+    <path d="M787 258 V199" stroke="#242420" stroke-width="3"/><path d="M787 258 836 222" stroke="#b66343" stroke-width="3"/>
+    <path d="M807 203 A58 58 0 0 1 829 217" fill="none" stroke="#b66343" stroke-width="3"/>
+    <circle cx="787" cy="258" r="5" fill="#242420"/>
+    <text x="704" y="329" fill="#68675f" font-size="15">用旋转角表示所在位置</text>
+  </g>
+  <g stroke="#b66343" stroke-width="2" fill="none"><path d="M311 222 H340 M332 214 342 222 332 230"/><path d="M618 222 H647 M639 214 649 222 639 230"/></g>
+</svg>

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 430">
+  <title>相同词语以不同顺序排列会产生不同语义</title>
+  <rect width="960" height="430" fill="#fbf9f4"/>
+  <text x="48" y="55" fill="#242420" font-family="monospace" font-size="22">SAME TOKENS, DIFFERENT ORDER</text>
+  <g font-family="sans-serif" text-anchor="middle">
+    <text x="258" y="115" fill="#68675f" font-size="16">序列 A</text><text x="702" y="115" fill="#68675f" font-size="16">序列 B</text>
+    <g font-size="24">
+      <rect x="78" y="150" width="105" height="68" fill="#f1ede5" stroke="#c9c2b7"/><text x="130" y="193" fill="#242420">猫</text>
+      <rect x="205" y="150" width="105" height="68" fill="#f1ede5" stroke="#c9c2b7"/><text x="257" y="193" fill="#242420">追</text>
+      <rect x="332" y="150" width="105" height="68" fill="#f1ede5" stroke="#c9c2b7"/><text x="384" y="193" fill="#242420">狗</text>
+      <rect x="522" y="150" width="105" height="68" fill="#f1ede5" stroke="#c9c2b7"/><text x="574" y="193" fill="#242420">狗</text>
+      <rect x="649" y="150" width="105" height="68" fill="#f1ede5" stroke="#c9c2b7"/><text x="701" y="193" fill="#242420">追</text>
+      <rect x="776" y="150" width="105" height="68" fill="#f1ede5" stroke="#c9c2b7"/><text x="828" y="193" fill="#242420">猫</text>
+    </g>
+    <g fill="none" stroke="#b66343" stroke-width="2" opacity=".75">
+      <path d="M130 231 C130 315 384 315 384 231"/><path d="M130 231 C130 275 257 275 257 231"/><path d="M257 231 C257 275 384 275 384 231"/>
+      <path d="M574 231 C574 315 828 315 828 231"/><path d="M574 231 C574 275 701 275 701 231"/><path d="M701 231 C701 275 828 275 828 231"/>
+    </g>
+    <text x="258" y="360" fill="#b66343" font-size="21">猫追狗</text><text x="702" y="360" fill="#b66343" font-size="21">狗追猫</text>
+    <text x="480" y="402" fill="#68675f" font-size="15">没有位置信息时，注意力只能看到词语的集合，看不到它们的先后顺序</text>
+  </g>
+</svg>

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 430">
+  <title>局部规则通过相互作用形成整体模式</title>
+  <rect width="960" height="430" fill="#fbf9f4"/>
+  <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 6 3 0 6" fill="none" stroke="#b66343" stroke-width="1.5"/></marker></defs>
+  <text x="48" y="55" fill="#242420" font-family="monospace" font-size="22">LOCAL RULES, GLOBAL PATTERNS</text>
+  <g font-family="sans-serif">
+    <text x="72" y="105" fill="#68675f" font-size="17">局部规则</text><text x="660" y="105" fill="#68675f" font-size="17">整体模式</text>
+    <rect x="72" y="128" width="294" height="222" fill="#f1ede5" stroke="#c9c2b7"/>
+    <g stroke="#d7d0c4"><path d="M121 128 V350 M170 128 V350 M219 128 V350 M268 128 V350 M317 128 V350"/><path d="M72 172 H366 M72 216 H366 M72 260 H366 M72 304 H366"/></g>
+    <g fill="#242420"><rect x="121" y="172" width="49" height="44"/><rect x="170" y="216" width="49" height="44"/><rect x="219" y="172" width="49" height="44"/><rect x="268" y="260" width="49" height="44"/><rect x="121" y="304" width="49" height="46"/></g>
+    <g fill="#b66343"><rect x="170" y="128" width="49" height="44"/><rect x="219" y="260" width="49" height="44"/><rect x="317" y="216" width="49" height="44"/></g>
+    <text x="72" y="388" fill="#68675f" font-size="15">每个单元只响应附近的状态</text>
+    <g stroke="#b66343" stroke-width="5" fill="none" stroke-linecap="square">
+      <path d="M610 230 630 250 650 230"/><path d="M675 185 695 205 715 185"/><path d="M740 145 760 165 780 145"/>
+      <path d="M675 275 695 295 715 275"/><path d="M740 320 760 340 780 320"/><path d="M805 230 825 250 845 230"/>
+      <path d="M805 145 825 165 845 145"/><path d="M740 230 760 250 780 230"/>
+    </g>
+    <text x="637" y="388" fill="#68675f" font-size="15">相互作用涌现出单个单元没有的结构</text>
+    <path d="M412 240 H535" stroke="#b66343" stroke-width="2.5" marker-end="url(#arrow)"/>
+    <text x="428" y="220" fill="#b66343" font-family="monospace" font-size="13">INTERACT</text>
+  </g>
+</svg>

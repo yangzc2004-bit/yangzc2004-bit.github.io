@@ -4,7 +4,7 @@
       <span class="entry-icon" aria-hidden="true">{% include pixel-icon.html icon=post.icon index=forloop.index0 %}</span>
       <span class="entry-copy">
         <span class="entry-title">{{ post.title }}</span>
-        <span class="entry-meta"><time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%b %d, %Y' }}</time>{% assign words = post.content | number_of_words %}{% assign minutes = words | divided_by: 300 | plus: 1 %}<span>{{ minutes }} min</span></span>
+        <span class="entry-meta"><time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%b %d, %Y' }}</time>{% assign characters = post.content | strip_html | size %}{% assign minutes = characters | divided_by: 500 | plus: 1 %}<span>{{ minutes }} min</span></span>
       </span>
     </a>
   {% endfor %}

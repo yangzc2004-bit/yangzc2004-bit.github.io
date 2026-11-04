@@ -5,7 +5,7 @@
   {% if include.post.description %}<p class="featured-description">{{ include.post.description }}</p>{% endif %}
   <div class="post-meta">
     <time datetime="{{ include.post.date | date_to_xmlschema }}">{{ include.post.date | date: '%b %d, %Y' }}</time>
-    {% assign words = include.post.content | number_of_words %}{% assign minutes = words | divided_by: 300 | plus: 1 %}<span>{{ minutes }} min</span>
+    {% assign characters = include.post.content | strip_html | size %}{% assign minutes = characters | divided_by: 500 | plus: 1 %}<span>{{ minutes }} min</span>
     {% if include.post.tags.size > 0 %}<span>{{ include.post.tags | first }}</span>{% endif %}
   </div>
 </article>
