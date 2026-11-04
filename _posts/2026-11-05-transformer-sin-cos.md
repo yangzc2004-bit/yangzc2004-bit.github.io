@@ -376,3 +376,11 @@ class SinusoidalPositionalEncoding(nn.Module):
 > 预告：在下一篇文章中，我们将拆解 RoPE 的数学推导、2D 平面旋转几何，以及它为什么能成为长文本大模型的“绝对标配”。
 > 
 > 感谢您的阅读，我们下期见！
+
+## 参考资料
+
+- [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
+- [RoFormer: Enhanced Transformer with Rotary Position Embedding](https://arxiv.org/abs/2104.09864)
+- [Self-Attention with Relative Position Representations](https://arxiv.org/abs/1803.02155)
+- [Transformer-XL: Attentive Language Models Beyond a Fixed-Length Context](https://arxiv.org/abs/1901.02860)
+- [Train Short, Test Long: Attention with Linear Biases Enables Input Length Extrapolation](https://arxiv.org/abs/2108.12409)
