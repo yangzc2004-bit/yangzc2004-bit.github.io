@@ -1,0 +1,14 @@
+---
+layout: default
+title: 文章
+description: 所有公开的学习笔记与文章。
+permalink: /articles/
+---
+<section class="archive wrap">
+  <header class="archive-heading"><div><h1>所有文章</h1><span>{{ site.posts.size }} 篇</span></div><button class="archive-search search-trigger" type="button">Search <kbd>⌘ K</kbd></button></header>
+  {% if site.posts.size > 0 %}
+    {% include post-list.html %}
+  {% else %}
+    <div class="archive-empty"><h2>暂无公开文章</h2><p>文章发布后会按时间出现在这里。</p></div>
+  {% endif %}
+</section>

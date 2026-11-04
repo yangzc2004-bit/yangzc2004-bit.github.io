@@ -1,0 +1,54 @@
+---
+layout: default
+---
+<article class="post-shell">
+  <header class="post-header wrap">
+    <a class="back-link" href="{{ '/articles/' | relative_url }}"><span aria-hidden="true">←</span> 全部文章</a>
+    <div class="post-kicker">
+      {% if page.tags.size > 0 %}<span>{{ page.tags | first }}</span>{% else %}<span>NOTE</span>{% endif %}
+      <span class="dot-separator" aria-hidden="true">·</span>
+      <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: '%Y.%m.%d' }}</time>
+    </div>
+    <h1>{{ page.title }}</h1>
+    {% if page.description %}<p class="post-description">{{ page.description }}</p>{% endif %}
+    <div class="post-byline">
+      <span class="author-mark" aria-hidden="true"><img src="{{ '/assets/images/pixel-avatar.png' | relative_url }}" alt=""></span>
+      <span>{{ site.author.name }}</span>
+      <span aria-hidden="true">·</span>
+      {% assign words = content | number_of_words %}
+      {% assign minutes = words | divided_by: 300 | plus: 1 %}
+      <span>约 {{ minutes }} 分钟阅读</span>
+    </div>
+  </header>
+
+  <div class="post-layout wrap">
+    <aside class="toc" aria-label="文章目录">
+      <p class="mono-label">ON THIS PAGE</p>
+      <nav id="table-of-contents"></nav>
+      <div class="toc-progress" aria-hidden="true"><span></span></div>
+    </aside>
+    <div class="post-content" id="post-content">
+      {{ content }}
+    </div>
+  </div>
+
+  <footer class="post-footer wrap">
+    <div class="post-tags">
+      {% for tag in page.tags %}<span># {{ tag }}</span>{% endfor %}
+    </div>
+    <nav class="post-navigation" aria-label="上一篇和下一篇">
+      {% if page.previous %}
+        <a class="post-nav-item" href="{{ page.previous.url | relative_url }}">
+          <span class="mono-label">上一篇</span>
+          <strong>{{ page.previous.title }}</strong>
+        </a>
+      {% else %}<span></span>{% endif %}
+      {% if page.next %}
+        <a class="post-nav-item next" href="{{ page.next.url | relative_url }}">
+          <span class="mono-label">下一篇</span>
+          <strong>{{ page.next.title }}</strong>
+        </a>
+      {% endif %}
+    </nav>
+  </footer>
+</article>

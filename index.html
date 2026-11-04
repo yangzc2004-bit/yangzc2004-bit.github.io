@@ -1,0 +1,62 @@
+---
+layout: default
+title: 首页
+description: 杨少侠写字的地方。
+---
+<section class="journal wrap">
+  <header class="site-intro">
+    <h1><img class="site-avatar" src="{{ '/assets/images/pixel-avatar.png' | relative_url }}" alt="杨少侠的像素头像"><span>{{ site.title }}</span></h1>
+    <p>杨少侠写字的地方</p>
+  </header>
+  <nav class="category-bar" aria-label="文章栏目">
+    <div class="category-filters">
+      <button class="category-filter active" type="button" data-filter="ALL" aria-pressed="true">ALL</button>
+      <button class="category-filter" type="button" data-filter="深度学习" aria-pressed="false">深度学习</button>
+      <button class="category-filter" type="button" data-filter="AGENTS" aria-pressed="false">AGENTS</button>
+      <button class="category-filter" type="button" data-filter="复杂系统" aria-pressed="false">复杂系统</button>
+    </div>
+    <button class="category-search search-trigger" type="button"><span>[S]</span> SEARCH</button>
+  </nav>
+  {% if site.posts.size > 0 %}
+    <div class="article-collection">
+      {% assign featured = site.posts | first %}
+      <div class="category-panel" data-category="ALL">
+        {% include featured-post.html post=featured %}
+        <div class="entries-list">
+          {% for post in site.posts offset:1 %}
+            <a class="entry-row post-item" href="{{ post.url | relative_url }}">
+              <span class="entry-icon" aria-hidden="true">{% include pixel-icon.html icon=post.icon index=forloop.index %}</span>
+              <span class="entry-copy"><span class="entry-title">{{ post.title }}</span><span class="entry-meta"><time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%b %d, %Y' }}</time>{% assign words = post.content | number_of_words %}{% assign minutes = words | divided_by: 300 | plus: 1 %}<span>{{ minutes }} min</span></span></span>
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+      {% assign categories = '深度学习,AGENTS,复杂系统' | split: ',' %}
+      {% for category in categories %}
+        {% assign category_posts = site.posts | where: 'category', category %}
+        {% if category_posts.size > 0 %}
+          {% assign featured = category_posts | first %}
+          <div class="category-panel" data-category="{{ category }}" hidden>
+            {% include featured-post.html post=featured %}
+            <div class="entries-list">
+              {% for post in category_posts offset:1 %}
+                <a class="entry-row post-item" href="{{ post.url | relative_url }}">
+                  <span class="entry-icon" aria-hidden="true">{% include pixel-icon.html icon=post.icon index=forloop.index %}</span>
+                  <span class="entry-copy"><span class="entry-title">{{ post.title }}</span><span class="entry-meta"><time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%b %d, %Y' }}</time>{% assign words = post.content | number_of_words %}{% assign minutes = words | divided_by: 300 | plus: 1 %}<span>{{ minutes }} min</span></span></span>
+                </a>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+    <p class="filter-empty" hidden>这个栏目还没有文章。</p>
+  {% else %}
+    <div class="empty-journal">
+      <span class="featured-label">Empty</span>
+      <h2 class="featured-title">暂无公开文章</h2>
+      <p class="featured-description">文章发布后会显示在这里。</p>
+      <div class="post-meta"><span>00 posts</span></div>
+    </div>
+  {% endif %}
+</section>

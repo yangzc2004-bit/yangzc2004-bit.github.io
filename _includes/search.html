@@ -1,0 +1,15 @@
+<dialog class="search-dialog" id="search-dialog" aria-labelledby="search-title">
+  <div class="search-box">
+    <h2 class="sr-only" id="search-title">搜索文章</h2>
+    <div class="search-input-row">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg>
+      <input id="search-input" type="search" placeholder="搜索标题、摘要或标签…" autocomplete="off">
+      <button class="search-close" type="button" aria-label="关闭搜索">ESC</button>
+    </div>
+    <div class="search-results" id="search-results" aria-live="polite">
+      <p class="search-hint">输入关键词，找到一篇笔记。</p>
+    </div>
+    <div class="search-footer"><span>↑ ↓ 浏览</span><span>Enter 打开</span></div>
+  </div>
+</dialog>
+<script type="application/json" id="search-data-url">{{ '/search.json' | relative_url }}</script>

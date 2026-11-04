@@ -1,0 +1,42 @@
+title: "杨少侠的写字板"
+description: "杨少侠的学习日志，记录机器学习、技术与生活。"
+url: "https://yangzc2004-bit.github.io"
+baseurl: ""
+lang: zh-CN
+timezone: Asia/Shanghai
+
+github_username: yangzc2004-bit
+author:
+  name: 杨少侠
+
+permalink: /posts/:title/
+markdown: kramdown
+highlighter: rouge
+excerpt_separator: "<!--more-->"
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - vendor
+  - .bundle
+
+kramdown:
+  input: GFM
+  math_engine: mathjax
+  syntax_highlighter: rouge
+
+feed:
+  posts_limit: 20
