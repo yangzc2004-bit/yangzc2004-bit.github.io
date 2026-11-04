@@ -377,6 +377,17 @@ class SinusoidalPositionalEncoding(nn.Module):
 > 
 > 感谢您的阅读，我们下期见！
 
+## 配套视频：位置的形状
+
+<video controls preload="metadata" playsinline poster="{{ '/assets/images/posts/position-shape-poster.jpg' | relative_url }}" style="display:block;width:100%;height:auto;margin:28px auto 14px;border:1px solid var(--line);background:#000;">
+  <source src="{{ '/assets/videos/position-shape.mp4' | relative_url }}" type="video/mp4">
+  你的浏览器不支持视频播放，请<a href="{{ '/assets/videos/position-shape.mp4' | relative_url }}" download>下载视频</a>。
+</video>
+
+<p class="figure-caption">视频：位置的形状（约 6 分钟）。</p>
+
+<p style="margin:0 0 28px;"><a href="{{ '/assets/videos/position-shape.mp4' | relative_url }}" download>下载视频（MP4，约 66 MB）</a></p>
+
 ## 参考资料
 
 - [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
