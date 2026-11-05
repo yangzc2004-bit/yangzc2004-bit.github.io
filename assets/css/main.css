@@ -174,7 +174,14 @@ img, svg { display: block; max-width: 100%; }
 .post-content th, .post-content td { padding: 11px 14px; border: 1px solid var(--line); text-align: left; }
 .post-content th { background: var(--code-bg); }
 .post-content mjx-container { max-width: 100%; overflow-x: auto; overflow-y: hidden; }
-.post-footer { max-width: 920px; padding-bottom: 90px; }
+.post-footer { max-width: 920px; padding-bottom: 45px; }
+.comments-section { max-width: 920px; padding-bottom: 90px; }
+.comments-heading { display: flex; align-items: baseline; gap: 18px; margin-bottom: 24px; padding-top: 30px; border-top: 1px solid var(--line); }
+.comments-heading h2 { margin: 0; font-size: 24px; font-weight: 550; }
+.comments-heading p { margin: 0; color: var(--faint); font-size: 12px; }
+.giscus { min-height: 160px; }
+.giscus-frame { color-scheme: light; }
+:root[data-theme="dark"] .giscus-frame { color-scheme: dark; }
 .post-tags { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 35px; }
 .post-tags span { color: var(--faint); font-family: var(--mono); font-size: 11px; }
 .post-navigation { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; padding-top: 30px; border-top: 1px solid var(--line); }

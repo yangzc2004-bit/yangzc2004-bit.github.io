@@ -8,6 +8,14 @@
     if (themeMeta) themeMeta.content = root.dataset.theme === 'dark' ? '#1d1c19' : '#f5f2eb';
   }
 
+  function updateGiscusTheme() {
+    var frame = document.querySelector('iframe.giscus-frame');
+    if (!frame) return;
+    frame.contentWindow.postMessage({
+      giscus: { setConfig: { theme: root.dataset.theme === 'dark' ? 'dark' : 'light' } }
+    }, 'https://giscus.app');
+  }
+
   updateThemeColor();
   if (themeButton) {
     themeButton.addEventListener('click', function () {
@@ -15,6 +23,7 @@
       root.dataset.theme = next;
       localStorage.setItem('theme', next);
       updateThemeColor();
+      updateGiscusTheme();
     });
   }
 

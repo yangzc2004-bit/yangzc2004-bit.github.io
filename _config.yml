@@ -40,3 +40,10 @@ kramdown:
 
 feed:
   posts_limit: 20
+
+giscus:
+  enabled: true
+  repo: yangzc2004-bit/yangzc2004-bit.github.io
+  repo_id: 1445143332
+  category: Announcements
+  category_id: DIC_kwDOViMjJM4DKbny
