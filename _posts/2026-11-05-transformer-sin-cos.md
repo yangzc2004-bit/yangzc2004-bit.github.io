@@ -7,12 +7,12 @@ category: "深度学习"
 icon: wave
 math: true
 ---
-## 一、Positon Encoding是什么？
+## 一、Position Encoding是什么？
 
 ![截屏2026-11-04 20.56.48]({{ '/assets/images/posts/transformer-sin-cos-mw24fri4-914846.png' | relative_url }})
 <p class="figure-caption">图1:Transformer架构图</p>
 
-回看这张架构图，我们可以发现，在下方不起眼的角落，每一个词嵌入（Embedding）在输入进注意力层（Attention）之前都和一个叫Position Encoding的做了“+”处理。那么你一定会好奇，这个PE（Posinton Encoding）到底是什么？以及为什么要“加”它？
+回看这张架构图，我们可以发现，在下方不起眼的角落，每一个词嵌入（Embedding）在输入进注意力层（Attention）之前都和一个叫Position Encoding的做了“+”处理。那么你一定会好奇，这个PE（Position Encoding）到底是什么？以及为什么要“加”它？
 
 简单来说，位置编码（Positional Encoding，简称 PE）就是一种专门用来标记 Token 在序列中“先后顺序”的向量。
 
