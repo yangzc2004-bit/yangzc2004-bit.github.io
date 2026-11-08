@@ -221,117 +221,7 @@ $$
 
 通过将不同波长的 $\sin$ 和 $\cos$ 在不同的维度上进行拼接（也就是将 $d_{\text{model}}$ 个维度的波形叠加），每一个位置 $pos$ 都获得了一个独一无二、高低频交织的高维指纹。
 
-![相邻维度两两配对并使用不同频率旋转的示意图]({{ '/assets/images/posts/rope-frequency-pairs.svg' | relative_url }})
-<p class="figure-caption">图6、RoPE 的多频思想：同一位置在不同二维平面上以不同频率旋转。</p>
-
-## 四、RoPE的具体架构：从“加位置”到“旋转位置”
-
-前面几章已经把正弦位置编码讲清楚了：它把位置向量加到词嵌入上，再让后续的 Transformer 层使用这份混合信息。RoPE 则换了一个入口——它不在输入端做加法，而是在每一层自注意力中旋转 Query 和 Key。
-
-### 1、RoPE 在 Transformer 里的位置
-
-原版流程可以粗略写成：
-
-$$x'_{m}=x_m+PE_m,\qquad q_m=x'_mW_Q,\qquad k_n=x'_nW_K$$
-
-RoPE 则先得到内容和位置分离的 $q$、$k$，再按位置旋转：
-
-$$q=x_mW_Q,\qquad k=x_nW_K$$
-
-$$q_m=R_m q,\qquad k_n=R_n k$$
-
-随后才计算注意力分数：
-
-$$s_{mn}=\frac{q_m k_n^T}{\sqrt{d_k}}$$
-
-这个顺序很重要。RoPE 不是先制造一个位置向量加到 $x$ 上，而是让内容投影与位置变换先后发生。这样做的目的，是让位置直接进入 Query–Key 的关系计算。
-
-![正弦位置编码的加法与 RoPE 旋转的对比]({{ '/assets/images/posts/position-add-vs-rotate.svg' | relative_url }})
-<p class="figure-caption">图7、左侧是输入端的加法，右侧是注意力内部的旋转。</p>
-
-### 2、论文里的架构是怎么做的
-
-RoFormer 论文给出的实现图，可以分成上下两部分来看。
-
-上方先处理一对二维维度 $(x_1,x_2)$：给定位置 $m$ 和频率 $\theta_1$，计算旋转角 $m\theta_1$，再通过二维旋转得到 $(x'_1,x'_2)$。
-
-下方则把同样的操作推广到整个序列。每一行对应一个位置上的 Query 或 Key，向量内部被拆成许多二维小组；不同小组使用不同的 $\theta_i$，因此同一份高维向量会同时经历多种频率的旋转。
-
-![RoFormer 论文中的 RoPE 实现示意图]({{ '/assets/images/posts/rope-implementation-paper.png' | relative_url }})
-<p class="figure-caption">图8、RoFormer 论文中的 RoPE 实现：位置与频率共同决定每一组二维维度的旋转角。</p>
-
-如果用矩阵语言写出来，位置 $m$ 对应的是由许多二维旋转块组成的大矩阵：
-
-$$R_m=\operatorname{diag}\left(R(m\theta_0),R(m\theta_1),\ldots,R(m\theta_{d/2-1})\right)$$
-
-这里不需要真的构造一张巨大的矩阵。程序只需要预先算出每个位置、每对维度的 $\sin$ 和 $\cos$，再逐对做两次乘加即可。
-
-### 3、为什么转完之后就能得到相对位置
-
-二维旋转有两条非常关键的性质：
-
-$$R_a^T=R_{-a},\qquad R_aR_b=R_{a+b}$$
-
-把它们带进 Query 和 Key 的点积：
-
-$$
-\begin{aligned}
-q_m k_n^T
-&=qR_m^TR_nk^T\\
-&=qR_{n-m}k^T
-\end{aligned}
-$$
-
-于是，施加旋转时虽然分别使用了绝对位置 $m$ 和 $n$，点积里却只剩相对位置 $n-m$。
-
-这就是论文架构图背后最核心的数学结构：**每个 token 先按照自己的绝对位置旋转，但两个 token 相遇时，真正影响点积的是它们的相对转角。**
-
-如果整段序列同时向后平移，$m$ 和 $n$ 都增加同一个常数，$n-m$ 不变，因此这对 token 的位置关系也不变。
-
-### 4、把它写成代码
-
-下面使用与前文一致的相邻维度配对方式。输入形状为 `[batch, seq, heads, dim]`：
-
-```python
-import torch
-
-def apply_rope(x, positions, inv_freq):
-    # x: [batch, seq, heads, dim]
-    # positions: [seq]，每个 token 的绝对位置
-    # inv_freq: [dim / 2]，每一对维度对应的频率
-    angles = positions.float().unsqueeze(-1) * inv_freq
-    cos = angles.cos()[None, :, None, :]
-    sin = angles.sin()[None, :, None, :]
-
-    even = x[..., 0::2]
-    odd = x[..., 1::2]
-    rotated = torch.stack(
-        (even * cos - odd * sin,
-         even * sin + odd * cos),
-        dim=-1,
-    )
-    return rotated.flatten(-2)
-```
-
-`even` 和 `odd` 取出每一对二维坐标，`stack` 把旋转后的两个分量重新拼回原来的维度顺序。Query 和 Key 使用相同的位置规则，但分别处理自己的张量。
-
-如果是带 KV 缓存的逐字生成，新 token 的 `positions` 不能每次都从 0 开始，而应该从已有缓存长度继续。否则，当前 Query 与历史 Key 的相对位置就会被算错。
-
-### 5、为什么只旋转 Query 和 Key，不旋转 Value
-
-注意力的分数由 Query 和 Key 决定，Value 则负责真正被加权汇总的内容。
-
-RoPE 的推导针对的是“位置如何影响匹配程度”，所以它作用于 $Q$ 和 $K$。Value 不需要承担同一项位置变换。随意把旋转扩展到 Value，会改变信息聚合方式，也不再是前面推导出的 RoPE 注意力结构。
-
-### 6、RoPE 与 RoFormer 的关系
-
-RoPE 是旋转位置编码方法，RoFormer 则是采用这种方法的 Transformer 模型。它并没有推翻注意力公式，而是在每一层注意力里插入了一个明确的位置变换。
-
-从原版的“词向量加位置”，到 RoPE 的“Query 和 Key 按位置旋转”，变化的不只是公式形式，更是位置信息进入模型的路径。前者把位置当作内容特征，后者把位置写成 token 之间的几何关系。
-
-这也是 RoPE 最值得理解的地方：它不是给注意力额外贴一张位置标签，而是直接改变了注意力比较两个向量时所处的坐标系。
-
-## 五、从公式到实现：每个token的PE到底怎么算出来的？
+## 四、从公式到实现：每个token的PE到底怎么算出来的？
 
 在上一节中，我们从纯粹的数学约束出发，倒逼出了正弦余弦编码的物理形态。但对于工程师来说，“看懂公式”和“真正理解它怎么落到内存里”之间，还隔着一道代码的鸿沟。
 
@@ -461,7 +351,7 @@ class SinusoidalPositionalEncoding(nn.Module):
 
 这样我们就把公式推导、几何直觉、单点手算到 PyTorch 向量化代码彻底打通了！
 
-## 六、结语：天才般的权衡，与通往未来的旋转之门
+## 五、结语：天才般的权衡，与通往未来的旋转之门
 
 回望 2017 年那篇改变了整个 AI 时代的论文 《Attention Is All You Need》，“谷歌八子”提出的正弦余弦位置编码（Sinusoidal PE），堪称深度学习历史上的一次工程学与数学交织的“神来之笔”。
 
@@ -500,12 +390,8 @@ class SinusoidalPositionalEncoding(nn.Module):
 
 ## 参考资料
 
-1. Vaswani, A., Shazeer, N., Parmar, N., et al. (2017). [Attention Is All You Need](https://arxiv.org/abs/1706.03762). 本文讨论的原版 Transformer 与正弦位置编码出处。
-2. Su, J., Lu, Y., Pan, S., Wen, B., & Liu, Y. (2021). [RoFormer: Enhanced Transformer with Rotary Position Embedding](https://arxiv.org/abs/2104.09864). RoPE 与 RoFormer 的原论文，图8来自该论文。
-3. 苏剑林（2021）。[让研究人员绞尽脑汁的 Transformer 位置编码](https://spaces.ac.cn/archives/8130). 对绝对位置、相对位置与多种位置编码路线的系统梳理。
-4. 苏剑林（2021）。[Transformer 升级之路：2、博采众长的旋转式位置编码](https://spaces.ac.cn/archives/8265). RoPE 的推导与设计思路。
-5. Shaw, P., Uszkoreit, J., & Vaswani, A. (2018). [Self-Attention with Relative Position Representations](https://arxiv.org/abs/1803.02155). 经典相对位置表示方法。
-6. Dai, Z., Yang, Z., Yang, Y., et al. (2019). [Transformer-XL: Attentive Language Models Beyond a Fixed-Length Context](https://arxiv.org/abs/1901.02860). 跨固定长度上下文的注意力与相对位置方法。
-7. Raffel, C., Shazeer, N., Roberts, A., et al. (2019). [Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer](https://arxiv.org/abs/1910.10683). T5 及其相对位置偏置。
-8. Biderman, S., Black, S., Foster, C., et al. (2021). [Rotary Embeddings: A Relative Revolution](https://blog.eleuther.ai/rotary-embeddings/). EleutherAI 对 RoPE 直觉、推导与实现的介绍。
-9. Press, O., Smith, N. A., & Lewis, M. (2021). [Train Short, Test Long: Attention with Linear Biases Enables Input Length Extrapolation](https://arxiv.org/abs/2108.12409). ALiBi 与输入长度外推。
+- [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
+- [RoFormer: Enhanced Transformer with Rotary Position Embedding](https://arxiv.org/abs/2104.09864)
+- [Self-Attention with Relative Position Representations](https://arxiv.org/abs/1803.02155)
+- [Transformer-XL: Attentive Language Models Beyond a Fixed-Length Context](https://arxiv.org/abs/1901.02860)
+- [Train Short, Test Long: Attention with Linear Biases Enables Input Length Extrapolation](https://arxiv.org/abs/2108.12409)
