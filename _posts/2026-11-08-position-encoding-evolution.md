@@ -74,8 +74,14 @@ $$
 我们将内积公式完全展开：
 
 $$
-q_m^T k_n = (W_q x_m + W_q p_m)^T (W_k x_n + W_k p_n)$$
-$$q_m^T k_n = \underbrace{x_m^T W_q^T W_k x_n}_{\text{纯内容得分}} + \underbrace{x_m^T W_q^T W_k p_n}_{\text{内容-位置交叉项}} + \underbrace{p_m^T W_q^T W_k x_n}_{\text{位置-内容交叉项}} + \underbrace{p_m^T W_q^T W_k p_n}_{\text{纯位置得分}}
+\begin{aligned}
+q_m^T k_n
+&= (W_q x_m + W_q p_m)^T (W_k x_n + W_k p_n)\\
+&= \underbrace{x_m^T W_q^T W_k x_n}_{\text{纯内容得分}}
++ \underbrace{x_m^T W_q^T W_k p_n}_{\text{内容-位置交叉项}}\\
+&\quad + \underbrace{p_m^T W_q^T W_k x_n}_{\text{位置-内容交叉项}}
++ \underbrace{p_m^T W_q^T W_k p_n}_{\text{纯位置得分}}
+\end{aligned}
 $$
 
 仔细观察展开后的这四个加法项，就能明白为什么说原版的相对位置表达是“隐性”且困难的：
