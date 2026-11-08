@@ -1,6 +1,7 @@
 ---
 layout: post
-title: "位置编码的演进：从从正余弦到旋转编码"
+title: "位置编码的演进：从正余弦到旋转编码"
+description: "从正弦余弦位置编码的局限出发，推导 RoPE 的旋转几何，并用 4 维手算与长文本外推串起位置编码的演进。"
 tags: ["深度学习"]
 category: "深度学习"
 icon: wave
