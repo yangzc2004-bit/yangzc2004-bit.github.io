@@ -4,7 +4,7 @@ title: "位置编码的演进：从正余弦到旋转编码"
 description: "从正弦余弦位置编码的局限出发，推导 RoPE 的旋转几何，并用 4 维手算与长文本外推串起位置编码的演进。"
 tags: ["深度学习"]
 category: "深度学习"
-icon: wave
+icon: orbit
 math: true
 ---
 在上篇文章中，我们谈到了为什么Transformer需要位置编码PE，以及基于sin/cos的位置编码是怎么设计的，今天我们来聊一聊RoPE——旋转位置编码。
