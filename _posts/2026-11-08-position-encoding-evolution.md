@@ -148,7 +148,109 @@ $$R_{\Theta, m}^d = \begin{pmatrix} \cos m\theta_1 & -\sin m\theta_1 & 0 & 0 & \
 
 在实际代码实现中，我们不需要去显式构造这个巨大的稀疏矩阵，只需利用元素级相乘（Hadamard product）进行逐维计算即可，计算开销极低。
 
-## 四、 动手算一遍：用一个 4 维例子对比两种 PE 的实际计算流程
+![相邻维度两两配对并使用不同频率旋转的示意图]({{ '/assets/images/posts/rope-frequency-pairs.svg' | relative_url }})
+<p class="figure-caption">图1、将高维向量拆成多个二维平面，每个平面使用不同频率旋转。</p>
+
+## 四、RoPE 的具体架构：从数学公式到工程实现
+
+上一章已经证明，旋转 Query 和 Key 后，点积会自然留下相对位置 $n-m$。这一章换一个视角：暂时放下公式推导，看看它在一层真实的自注意力里究竟接在哪里、数据以什么形状流动，以及论文中的架构图应该怎样读。
+
+### 1、先看整条数据通路
+
+输入 token 经过词嵌入和线性投影后，会得到 $Q$、$K$、$V$。RoPE 并不改变这三条投影本身，而是在进入注意力分数计算前，分别对 $Q$ 和 $K$ 施加位置旋转：
+
+$$q=x_mW_Q,\qquad k=x_nW_K,\qquad v=x_nW_V$$
+
+$$q_m=R_mq,\qquad k_n=R_nk$$
+
+$$s_{mn}=\frac{q_mk_n^T}{\sqrt{d_k}}$$
+
+然后才进行 softmax，并用注意力权重汇总 Value。换句话说，RoPE 管的是“哪些 token 更应该相互关注”，不是直接修改被汇总的内容。
+
+![正弦位置编码的加法与 RoPE 旋转的对比]({{ '/assets/images/posts/position-add-vs-rotate.svg' | relative_url }})
+<p class="figure-caption">图2、左侧是输入端的位置加法，右侧是注意力内部的位置旋转。</p>
+
+这也正好对应第二章的痛点：原版 PE 在投影前把位置和内容混在一起，RoPE 则把旋转放到 $W_Q$、$W_K$ 之后，避免投影矩阵把原本清晰的旋转关系打散。
+
+### 2、论文里的实现图应该怎样读
+
+RoFormer 论文中的实现图可以分成“单组维度”和“整个序列”两层。
+
+上方先取一对二维分量 $(x_1,x_2)$。给定绝对位置 $m$ 与这一组的频率 $\theta_1$，旋转角就是 $m\theta_1$。二维向量旋转后得到 $(x'_1,x'_2)$，这就是位置已经写入方向的 Query 或 Key。
+
+下方则把这个操作扩展到整个序列：每一行对应一个位置上的高维向量，向量内部被拆成许多二维小组。不同小组采用不同的 $\theta_i$，所以同一份 Query 或 Key 会在多个二维平面上同时旋转。
+
+![RoFormer 论文中的 RoPE 实现示意图]({{ '/assets/images/posts/rope-implementation-paper.png' | relative_url }})
+<p class="figure-caption">图3、RoFormer 论文中的 RoPE 实现：位置与频率共同决定每组二维分量的旋转角。</p>
+
+如果写成完整矩阵，位置 $m$ 对应的是许多二维旋转块组成的分块对角矩阵：
+
+$$R_m=\operatorname{diag}\left(R(m\theta_0),R(m\theta_1),\ldots,R(m\theta_{d/2-1})\right)$$
+
+实际程序不需要构造这张大矩阵。只需预先计算每个位置、每组频率对应的正弦和余弦，再对每一对分量做两次乘加即可。论文里的“矩阵形式”适合推导，逐对计算则更适合工程实现。
+
+### 3、多头注意力中的张量形状
+
+在多头注意力中，$Q$ 和 $K$ 通常还会按头拆分。一种常见的张量布局是：
+
+```text
+[batch_size, sequence_length, num_heads, head_dim]
+```
+
+RoPE 一般作用在最后的 `head_dim` 上。每个注意力头都有自己投影后的内容，但同一批位置使用相同的旋转规则。
+
+这意味着 RoPE 不会把所有注意力头变成同一种头。它们仍然可以学习不同的内容关系，只是都获得了同一套位置坐标。
+
+实现时还要特别注意维度配对约定：有的代码把相邻维度 `(0,1)`、`(2,3)` 配成一组，有的代码则把前半维和后半维配对。两种方式都可以表达旋转，但权重、缓存和推理代码必须使用同一种约定。
+
+### 4、一个保持相邻配对的 PyTorch 实现
+
+下面的代码使用 `[batch, seq, heads, dim]` 布局，并将相邻维度配对：
+
+```python
+import torch
+
+def apply_rope(x, positions, inv_freq):
+    # x: [batch, seq, heads, dim]
+    # positions: [seq]
+    # inv_freq: [dim / 2]
+    angles = positions.float().unsqueeze(-1) * inv_freq
+    cos = angles.cos()[None, :, None, :]
+    sin = angles.sin()[None, :, None, :]
+
+    even = x[..., 0::2]
+    odd = x[..., 1::2]
+    rotated = torch.stack(
+        (even * cos - odd * sin,
+         even * sin + odd * cos),
+        dim=-1,
+    )
+    return rotated.flatten(-2)
+```
+
+这里最重要的不是框架函数，而是两行计算仍然对应二维旋转：
+
+$$x'=x\cos\theta-y\sin\theta,\qquad y'=x\sin\theta+y\cos\theta$$
+
+`stack` 只是负责把两个旋转后的分量按原顺序重新拼回去。Query 和 Key 使用相同的位置规则，但分别处理各自的张量。
+
+### 5、训练与 KV 缓存中的位置
+
+训练时通常一次看到整段序列，可以直接使用 `0, 1, ..., seq_len-1` 作为位置。
+
+自回归解码则不同。如果 KV 缓存中已经保存了 `past_length` 个 token，新 token 的位置应该是 `past_length`，而不是重新从 0 开始。历史 Key 在写入缓存时已经按各自位置旋转，当前 Query 也必须使用当前真实位置。
+
+如果把新 token 错当成位置 0，张量形状不会报错，但当前 Query 与历史 Key 的相对位置就全错了。这类问题比公式错误更隐蔽，因为它往往表现为生成质量异常，而不是程序崩溃。
+
+同时，Value 不需要按同样方式旋转。RoPE 的相对位置推导针对 Query–Key 点积，把旋转扩展到 Value 会改变信息聚合的含义。
+
+### 6、这一章与前面的数学推导是什么关系
+
+第三章回答了“为什么旋转后能表达相对位置”，这一章回答的是“它在模型里究竟怎样落地”。
+
+前者关注 $R_m^TR_n=R_{n-m}$，后者关注投影、分组、张量布局、缓存和 Value 的边界。把这两部分合起来，才算真正从论文公式走到了可运行的 RoPE 架构。
+
+## 五、 动手算一遍：用一个 4 维例子对比两种 PE 的实际计算流程
 
 为了彻底搞懂原版 Sinusoidal PE 与 RoPE 在底层到底是怎么计算的，我们不妨抛开抽象符号，用一套统一的 4 维向量（$d=4$），手动推演一次完整流程。
 
@@ -250,7 +352,7 @@ $$\text{Score} = -0.8415 + (-0.0100) = \mathbf{-0.8515}$$
 
 - 旋转位置编码 (RoPE)：无论我们在两头给 $q$ 和 $k$ 旋转了多少角度，只要它们做内积，绝对位置就会瞬间自动相互抵消。最终的数值精准且完全等价于直接乘以一个只与相对距离 $n-m$ 挂钩的旋转矩阵！
 
-## 五、 结语与前沿展望：从 RoPE 走向无限延伸的“长文本时代”
+## 六、 结语与前沿展望：从 RoPE 走向无限延伸的“长文本时代”
 
 回望大模型架构的演进史，位置编码（PE）常常被戏称为“戴着镣铐跳舞”的辅助组件。但正是这副看似不起眼的“镣铐”，决定了模型究竟能走多远、能看多深。
 
@@ -288,3 +390,16 @@ $$\text{Score} = -0.8415 + (-0.0100) = \mathbf{-0.8515}$$
 从数学上的两角和恒等式，到复平面上优美的向量旋转，再到如今支撑起百万字长文检索的各种外推算法，RoPE 完美地诠释了什么是深度学习中“最优雅的数学，往往也是工程上最强悍的武器”。
 
 希望这篇从历史痛点、数学推导、低维手算到前沿演进的深度解析，能让你对大模型底层“位置感知”的奥秘，有一个通透而全新的理解。
+
+## 参考资料
+
+1. Vaswani, A., Shazeer, N., Parmar, N., et al. (2017). [Attention Is All You Need](https://arxiv.org/abs/1706.03762). 原版 Transformer 与正弦位置编码。
+2. Su, J., Lu, Y., Pan, S., Wen, B., & Liu, Y. (2021). [RoFormer: Enhanced Transformer with Rotary Position Embedding](https://arxiv.org/abs/2104.09864). RoPE 与 RoFormer 原论文，图3来自该论文。
+3. 苏剑林（2021）。[让研究人员绞尽脑汁的 Transformer 位置编码](https://spaces.ac.cn/archives/8130). 绝对位置、相对位置及多种位置编码路线的系统梳理。
+4. 苏剑林（2021）。[Transformer 升级之路：2、博采众长的旋转式位置编码](https://spaces.ac.cn/archives/8265). RoPE 的推导与设计思路。
+5. Shaw, P., Uszkoreit, J., & Vaswani, A. (2018). [Self-Attention with Relative Position Representations](https://arxiv.org/abs/1803.02155). 经典相对位置表示方法。
+6. Dai, Z., Yang, Z., Yang, Y., et al. (2019). [Transformer-XL: Attentive Language Models Beyond a Fixed-Length Context](https://arxiv.org/abs/1901.02860). 跨固定长度上下文的注意力与相对位置方法。
+7. Raffel, C., Shazeer, N., Roberts, A., et al. (2019). [Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer](https://arxiv.org/abs/1910.10683). T5 及其相对位置偏置。
+8. Biderman, S., Black, S., Foster, C., et al. (2021). [Rotary Embeddings: A Relative Revolution](https://blog.eleuther.ai/rotary-embeddings/). RoPE 的几何直觉、推导和实现。
+9. Press, O., Smith, N. A., & Lewis, M. (2021). [Train Short, Test Long: Attention with Linear Biases Enables Input Length Extrapolation](https://arxiv.org/abs/2108.12409). ALiBi 与输入长度外推。
+10. Peng, B., Quesnelle, J., Fan, H., & Shippole, E. (2023). [YaRN: Efficient Context Window Extension of Large Language Models](https://arxiv.org/abs/2309.00071). 面向 RoPE 模型上下文扩展的 YaRN 方法。
