@@ -156,6 +156,8 @@
     var toc = document.querySelector('.toc');
     if (!headings.length) {
       toc.hidden = true;
+      var tocLayout = toc.closest('.post-layout');
+      if (tocLayout) tocLayout.classList.add('no-toc');
     } else {
       headings.forEach(function (heading, index) {
         if (!heading.id) heading.id = 'section-' + (index + 1);

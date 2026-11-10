@@ -145,6 +145,8 @@ img, svg { display: block; max-width: 100%; }
 .author-mark { display: block; width: 27px; height: 27px; overflow: hidden; }
 .author-mark img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
 .post-layout { position: relative; display: grid; grid-template-columns: 175px minmax(0, 720px); justify-content: center; gap: 65px; padding-block: 85px 90px; }
+.post-layout.no-toc { grid-template-columns: minmax(0, 720px); }
+.post-layout.no-toc .post-content { grid-column: 1; }
 .post-layout::before { position: absolute; top: 40px; right: 0; left: 0; height: 1px; background: var(--line); content: ""; }
 .toc { position: sticky; top: 115px; align-self: start; max-height: calc(100vh - 150px); overflow-y: auto; }
 .toc .mono-label { margin-bottom: 16px; color: var(--faint); font-size: 9px; }
@@ -222,6 +224,7 @@ img, svg { display: block; max-width: 100%; }
 
 @media (max-width: 900px) {
   .post-layout { grid-template-columns: 145px minmax(0, 650px); gap: 35px; }
+  .post-layout.no-toc { grid-template-columns: minmax(0, 650px); }
   .about-body { gap: 45px; }
 }
 
