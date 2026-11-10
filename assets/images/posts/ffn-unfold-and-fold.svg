@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 740">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10Z" fill="#8f887d"/></marker>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0V32" fill="none" stroke="#ded8cd" stroke-width=".7" opacity=".55"/></pattern>
+  </defs>
+  <rect width="1200" height="740" fill="#f3efe6"/>
+  <rect x="30" y="30" width="1140" height="680" fill="url(#grid)" stroke="#d4cdc0"/>
+  <text x="70" y="85" fill="#777168" font-family="ui-monospace,monospace" font-size="15" letter-spacing="3">02 / THE JOURNEY THROUGH FFN</text>
+  <text x="70" y="130" fill="#292824" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="30" font-weight="600">先把一件事展开，再把它收起来</text>
+
+  <g font-family="ui-monospace,monospace" font-size="14" text-anchor="middle">
+    <text x="175" y="203" fill="#777168">INPUT · d_model</text>
+    <text x="455" y="203" fill="#a45d42">EXPAND · d_ff</text>
+    <text x="725" y="203" fill="#697161">ACTIVATE · σ</text>
+    <text x="1010" y="203" fill="#777168">OUTPUT · d_model</text>
+  </g>
+
+  <g stroke="#a9a296" stroke-width="1.2">
+    <rect x="120" y="278" width="110" height="36" fill="#d9d6cb"/>
+    <rect x="120" y="328" width="110" height="36" fill="#d9d6cb"/>
+    <rect x="120" y="378" width="110" height="36" fill="#d9d6cb"/>
+    <rect x="120" y="428" width="110" height="36" fill="#d9d6cb"/>
+  </g>
+  <g fill="#5d5a53" font-family="ui-monospace,monospace" font-size="16"><text x="145" y="302">x₁</text><text x="145" y="352">x₂</text><text x="145" y="402">x₃</text><text x="145" y="452">x₄</text></g>
+
+  <g stroke="#b97b61" stroke-width="1.2">
+    <rect x="400" y="220" width="110" height="29" fill="#e2b7a2"/>
+    <rect x="400" y="261" width="110" height="29" fill="#e2b7a2"/>
+    <rect x="400" y="302" width="110" height="29" fill="#e2b7a2"/>
+    <rect x="400" y="343" width="110" height="29" fill="#e2b7a2"/>
+    <rect x="400" y="384" width="110" height="29" fill="#e2b7a2"/>
+    <rect x="400" y="425" width="110" height="29" fill="#e2b7a2"/>
+    <rect x="400" y="466" width="110" height="29" fill="#e2b7a2"/>
+    <rect x="400" y="507" width="110" height="29" fill="#e2b7a2"/>
+  </g>
+  <g fill="#774b3b" font-family="ui-monospace,monospace" font-size="13"><text x="420" y="240">h₁</text><text x="420" y="281">h₂</text><text x="420" y="322">h₃</text><text x="420" y="363">h₄</text><text x="420" y="404">h₅</text><text x="420" y="445">h₆</text><text x="420" y="486">h₇</text><text x="420" y="527">h₈</text></g>
+
+  <g stroke="#89907f" stroke-width="1.2">
+    <rect x="670" y="220" width="110" height="29" fill="#ccd1c2"/>
+    <rect x="670" y="261" width="110" height="29" fill="#ccd1c2"/>
+    <rect x="670" y="302" width="110" height="29" fill="#e8e5dc" stroke-dasharray="3 3"/>
+    <rect x="670" y="343" width="110" height="29" fill="#ccd1c2"/>
+    <rect x="670" y="384" width="110" height="29" fill="#ccd1c2"/>
+    <rect x="670" y="425" width="110" height="29" fill="#e8e5dc" stroke-dasharray="3 3"/>
+    <rect x="670" y="466" width="110" height="29" fill="#ccd1c2"/>
+    <rect x="670" y="507" width="110" height="29" fill="#ccd1c2"/>
+  </g>
+  <g fill="#535c4b" font-family="ui-monospace,monospace" font-size="13"><text x="690" y="240">σ(h₁)</text><text x="690" y="281">σ(h₂)</text><text x="690" y="322" fill="#98988e">σ(h₃)</text><text x="690" y="363">σ(h₄)</text><text x="690" y="404">σ(h₅)</text><text x="690" y="445" fill="#98988e">σ(h₆)</text><text x="690" y="486">σ(h₇)</text><text x="690" y="527">σ(h₈)</text></g>
+
+  <g stroke="#a9a296" stroke-width="1.2">
+    <rect x="955" y="278" width="110" height="36" fill="#d9d6cb"/>
+    <rect x="955" y="328" width="110" height="36" fill="#d9d6cb"/>
+    <rect x="955" y="378" width="110" height="36" fill="#d9d6cb"/>
+    <rect x="955" y="428" width="110" height="36" fill="#d9d6cb"/>
+  </g>
+  <g fill="#5d5a53" font-family="ui-monospace,monospace" font-size="16"><text x="980" y="302">y₁</text><text x="980" y="352">y₂</text><text x="980" y="402">y₃</text><text x="980" y="452">y₄</text></g>
+
+  <g fill="none" stroke="#8f887d" stroke-width="1.7" marker-end="url(#arrow)">
+    <path d="M250 370H375"/><path d="M530 378H645"/><path d="M800 378H930"/>
+  </g>
+  <g font-family="ui-monospace,monospace" font-size="20" text-anchor="middle">
+    <text x="312" y="346" fill="#a45d42">W₁</text><text x="587" y="354" fill="#697161">σ</text><text x="865" y="354" fill="#777168">W₂</text>
+  </g>
+  <g font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="14" text-anchor="middle">
+    <text x="175" y="512" fill="#777168">压缩的表示</text>
+    <text x="455" y="579" fill="#a45d42">在更宽的空间里摊开</text>
+    <text x="725" y="579" fill="#697161">保留、压低、重新组合</text>
+    <text x="1010" y="512" fill="#777168">回到原来的维度</text>
+  </g>
+
+  <path d="M120 622H1065" stroke="#d4cdc0"/>
+  <text x="120" y="660" fill="#5d5a53" font-family="ui-monospace,monospace" font-size="16">FFN(x) = W₂ σ(W₁x + b₁) + b₂</text>
+  <text x="1065" y="660" fill="#8a8378" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="13" text-anchor="end">升维 → 激活 → 降维</text>
+</svg>
