@@ -14,6 +14,7 @@ description: 杨少侠写字的地方。
       <button class="category-filter" type="button" data-filter="深度学习" aria-pressed="false">深度学习</button>
       <button class="category-filter" type="button" data-filter="AGENTS" aria-pressed="false">AGENTS</button>
       <button class="category-filter" type="button" data-filter="复杂系统" aria-pressed="false">复杂系统</button>
+      <button class="category-filter" type="button" data-filter="机器学习不相信眼泪" aria-pressed="false">机器学习不相信眼泪</button>
     </div>
     <button class="category-search search-trigger" type="button"><span>[S]</span> SEARCH</button>
   </nav>
@@ -31,7 +32,7 @@ description: 杨少侠写字的地方。
           {% endfor %}
         </div>
       </div>
-      {% assign categories = '深度学习,AGENTS,复杂系统' | split: ',' %}
+      {% assign categories = '深度学习,AGENTS,复杂系统,机器学习不相信眼泪' | split: ',' %}
       {% for category in categories %}
         {% assign category_posts = site.posts | where: 'category', category %}
         {% if category_posts.size > 0 %}

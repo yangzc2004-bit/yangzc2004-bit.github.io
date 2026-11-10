@@ -3,7 +3,7 @@ layout: post
 title: "前馈神经网络：在无人知晓处展开"
 description: "注意力让信息相遇，FFN 让每个 token 独自消化。关于前馈神经网络，也关于那些无人知晓的内部计算。"
 tags: ["深度学习", "Transformer"]
-category: "深度学习"
+category: "机器学习不相信眼泪"
 series: "machine-learning-no-tears"
 series_title: "机器学习不相信眼泪"
 series_order: 1

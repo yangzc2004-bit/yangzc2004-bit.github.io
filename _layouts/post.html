@@ -5,7 +5,7 @@ layout: default
   <header class="post-header wrap">
     <a class="back-link" href="{{ '/articles/' | relative_url }}"><span aria-hidden="true">←</span> 全部文章</a>
     <div class="post-kicker">
-      {% if page.series %}<a href="{{ '/series/' | append: page.series | append: '/' | relative_url }}">{{ page.series_title }} · {{ page.series_order | prepend: '0' }}</a>{% elsif page.tags.size > 0 %}<span>{{ page.tags | first }}</span>{% else %}<span>NOTE</span>{% endif %}
+      {% if page.series %}<span>{{ page.series_title }} · {{ page.series_order | prepend: '0' }}</span>{% elsif page.tags.size > 0 %}<span>{{ page.tags | first }}</span>{% else %}<span>NOTE</span>{% endif %}
       <span class="dot-separator" aria-hidden="true">·</span>
       <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: '%Y.%m.%d' }}</time>
     </div>
