@@ -8,7 +8,6 @@ permalink: /poetry/
 <section class="simple-page-hero wrap">
   <p class="section-code">LAB / MICROGPT</p>
   <h1>唐诗小助手<span class="heading-dot">.</span></h1>
-  <p class="page-motto">1.41M 参数 · RoPE + SwiGLU + QK-Norm · 纯浏览器端 KV Cache 推理</p>
 </section>
 
 <section class="wrap" style="padding-bottom: 90px;">
@@ -76,11 +75,11 @@ permalink: /poetry/
     </div>
 
     <div class="poetry-quick">
-      <button class="poetry-qbtn" type="button" data-prompt="你好">你好</button>
-      <button class="poetry-qbtn" type="button" data-prompt="帮我写一首关于秋夜的五言绝句">秋夜 · 五言绝句</button>
-      <button class="poetry-qbtn" type="button" data-prompt="给我来一首七言绝句吧">自由发挥 · 七言绝句</button>
-      <button class="poetry-qbtn" type="button" data-prompt="帮我写一首藏头诗，用春夏秋冬">藏头 · 春夏秋冬</button>
-      <button class="poetry-qbtn" type="button" data-prompt="接着这句往下写：明月出天山，">续写 · 明月出天山</button>
+      <button class="poetry-qbtn" type="button" data-prompt="写一首五言绝句">五言绝句</button>
+      <button class="poetry-qbtn" type="button" data-prompt="写一首七言绝句">七言绝句</button>
+      <button class="poetry-qbtn" type="button" data-prompt="写一首五言律诗">五言律诗</button>
+      <button class="poetry-qbtn" type="button" data-prompt="写一首七言律诗">七言律诗</button>
+      <button class="poetry-qbtn" type="button" data-prompt="写一首古风">古风</button>
     </div>
 
     <div id="poetryChatBox" class="poetry-chat" aria-live="polite">
@@ -91,7 +90,7 @@ permalink: /poetry/
     </div>
 
     <form id="poetryChatForm" class="poetry-form">
-      <input id="poetryInput" type="text" placeholder="试试：帮我写一首关于明月的五言绝句 / 你好 / 藏头：风花雪月" autocomplete="off">
+      <input id="poetryInput" type="text" placeholder="试试：帮我写一首关于秋夜的五言绝句 / 以江南为题，作一首七言绝句" autocomplete="off">
       <button id="poetrySendBtn" class="button" type="submit" disabled>发送</button>
     </form>
   </div>
@@ -128,18 +127,26 @@ permalink: /poetry/
     const clauses = clean.split(/[，。！？\n]+/).filter(Boolean);
     const lines = clean.split("\n").filter((x) => x.trim());
     let score = 0;
-    let targetClauses = 4;
-    let targetLen = 5;
-    if (prompt.includes("七言")) targetLen = 7;
-    if (prompt.includes("律诗")) targetClauses = 8;
 
-    if (clauses.length === targetClauses) score += 1.0;
-    else score -= 0.25 * Math.abs(clauses.length - targetClauses);
+    if (prompt.includes("古风")) {
+      if (clauses.length >= 4) score += 0.8;
+      if (lines.length >= 2 && lines.every((l) => /^[^，。！？]+，[^，。！？]+[。！？]$/.test(l))) {
+        score += 0.8;
+      }
+    } else {
+      let targetClauses = 4;
+      let targetLen = 5;
+      if (prompt.includes("七言")) targetLen = 7;
+      if (prompt.includes("律诗")) targetClauses = 8;
 
-    const lenMatch = clauses.filter((c) => c.length === targetLen).length;
-    score += 0.8 * (lenMatch / Math.max(1, targetClauses));
-    if (lines.length === targetClauses / 2 && lines.every((l) => /^[^，。！？]+，[^，。！？]+[。！？]$/.test(l))) {
-      score += 0.6;
+      if (clauses.length === targetClauses) score += 1.0;
+      else score -= 0.25 * Math.abs(clauses.length - targetClauses);
+
+      const lenMatch = clauses.filter((c) => c.length === targetLen).length;
+      score += 0.8 * (lenMatch / Math.max(1, targetClauses));
+      if (lines.length === targetClauses / 2 && lines.every((l) => /^[^，。！？]+，[^，。！？]+[。！？]$/.test(l))) {
+        score += 0.6;
+      }
     }
     const chars = [...clean.replace(/[，。！？\n]/g, "")];
     for (let i = 1; i < chars.length; i++) {
