@@ -44,7 +44,7 @@ math: true
 > 落日临江上，孤云上桂楼。
 > 孤舟如不见，惆怅望君愁。
 
-这篇文章，就是记录这只“141 万参数小诗人”如何一步步长大成人的全过程。
+这篇文章，就是记录这只“141 万参数小诗人”如何一步步长大成人的全过程。项目的完整训练代码、数据分片与最终模型权重已经开源在 GitHub 仓库：[yangzc2004-bit/tang-poetry-gpt](https://github.com/yangzc2004-bit/tang-poetry-gpt)。
 
 ---
 
@@ -248,6 +248,7 @@ SFT 之后，我很快发现了小模型的一个典型毛病：**语感有了�
 
 ## 参考资料
 
+- 本文项目源码与权重：[yangzc2004-bit/tang-poetry-gpt](https://github.com/yangzc2004-bit/tang-poetry-gpt)
 - Andrej Karpathy — [microgpt（博客原文）](https://karpathy.ai/microgpt.html) & [GitHub Gist](https://gist.github.com/karpathy/8627fe009c40f57531cb18360106ce95)
 - Andrej Karpathy — [makemore / names.txt](https://github.com/karpathy/makemore)
 - [chinese-poetry / 全唐诗数据集](https://github.com/chinese-poetry/chinese-poetry)
