@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0 10 5 0 10Z" fill="#9b958a"/>
+    </marker>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" stroke="#ded8cd" stroke-width=".7" opacity=".55"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="700" fill="#f3efe6"/>
+  <rect x="30" y="30" width="1140" height="640" fill="url(#grid)" stroke="#d4cdc0"/>
+  <text x="70" y="85" fill="#777168" font-family="ui-monospace,monospace" font-size="15" letter-spacing="3">02 / SEQUENCE PACKING &amp; DOC ISOLATION</text>
+  <text x="70" y="127" fill="#292824" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="29" font-weight="600">告别空转：多首诗打包训练与文档隔离掩码</text>
+
+  <!-- Left panel: Naive Padding vs Packing -->
+  <rect x="70" y="165" width="490" height="430" fill="#eee8dd" stroke="#d4cdc0"/>
+  <text x="100" y="205" fill="#a45d42" font-family="ui-monospace,monospace" font-size="14" letter-spacing="2">NAIVE PADDING VS PACKING</text>
+  <text x="455" y="205" fill="#777168" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="15">序列打包</text>
+
+  <!-- Naive padding row -->
+  <text x="100" y="252" fill="#68675f" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="14">直接 Padding（大量算力浪费在空位上）</text>
+  <rect x="100" y="268" width="105" height="44" fill="#b66343" opacity=".88" stroke="#9b4f34"/>
+  <text x="152" y="295" fill="#f8f4ec" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="14" text-anchor="middle">五言绝句 A</text>
+  <rect x="205" y="268" width="325" height="44" fill="#e2ddd3" stroke="#b9b2a5" stroke-dasharray="4 4"/>
+  <text x="367" y="295" fill="#777168" font-family="ui-monospace,monospace" font-size="13" text-anchor="middle">&lt;PAD&gt; &lt;PAD&gt; ... ~80% 空转</text>
+
+  <path d="M315 330v36" stroke="#b66343" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Packed row -->
+  <text x="100" y="392" fill="#292824" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="14" font-weight="600">First-Fit Packing（拼接多首诗，位置索引按首重置）</text>
+  <rect x="100" y="408" width="128" height="48" fill="#b66343" opacity=".88" stroke="#9b4f34"/>
+  <text x="164" y="432" fill="#f8f4ec" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="14" text-anchor="middle">诗 A（doc=0）</text>
+  <text x="164" y="449" fill="#f8f4ec" font-family="ui-monospace,monospace" font-size="11" text-anchor="middle">pos: 0..25</text>
+
+  <rect x="232" y="408" width="128" height="48" fill="#697161" opacity=".9" stroke="#535a4c"/>
+  <text x="296" y="432" fill="#f8f4ec" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="14" text-anchor="middle">诗 B（doc=1）</text>
+  <text x="296" y="449" fill="#f8f4ec" font-family="ui-monospace,monospace" font-size="11" text-anchor="middle">pos: 0..25</text>
+
+  <rect x="364" y="408" width="128" height="48" fill="#8b7355" opacity=".9" stroke="#6d5940"/>
+  <text x="428" y="432" fill="#f8f4ec" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="14" text-anchor="middle">诗 C（doc=2）</text>
+  <text x="428" y="449" fill="#f8f4ec" font-family="ui-monospace,monospace" font-size="11" text-anchor="middle">pos: 0..25</text>
+
+  <rect x="496" y="408" width="34" height="48" fill="#e2ddd3" stroke="#b9b2a5"/>
+  <text x="513" y="436" fill="#777168" font-family="ui-monospace,monospace" font-size="10" text-anchor="middle">PAD</text>
+
+  <text x="315" y="512" fill="#68675f" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="14" text-anchor="middle">每次新诗开头 pos_ids 归零</text>
+  <text x="315" y="536" fill="#777168" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="13" text-anchor="middle">让 RoPE 把每首诗都当作从第 0 字起笔</text>
+
+  <!-- Center connector -->
+  <path d="M570 380h60" stroke="#b66343" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="600" y="362" fill="#a45d42" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="13" text-anchor="middle">防串台</text>
+
+  <!-- Right panel: Block-Causal Attention Mask -->
+  <rect x="640" y="165" width="490" height="430" fill="#e9e8df" stroke="#d4cdc0"/>
+  <text x="670" y="205" fill="#697161" font-family="ui-monospace,monospace" font-size="14" letter-spacing="2">DOC CAUSAL MASK</text>
+  <text x="1005" y="205" fill="#777168" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="15">分块下三角</text>
+
+  <!-- 6x6 matrix representing 3 packed docs (2 tokens each) -->
+  <g transform="translate(745,245)">
+    <!-- Column labels -->
+    <text x="22" y="-10" fill="#b66343" font-family="ui-monospace,monospace" font-size="12" text-anchor="middle">A0</text>
+    <text x="66" y="-10" fill="#b66343" font-family="ui-monospace,monospace" font-size="12" text-anchor="middle">A1</text>
+    <text x="110" y="-10" fill="#697161" font-family="ui-monospace,monospace" font-size="12" text-anchor="middle">B0</text>
+    <text x="154" y="-10" fill="#697161" font-family="ui-monospace,monospace" font-size="12" text-anchor="middle">B1</text>
+    <text x="198" y="-10" fill="#8b7355" font-family="ui-monospace,monospace" font-size="12" text-anchor="middle">C0</text>
+    <text x="242" y="-10" fill="#8b7355" font-family="ui-monospace,monospace" font-size="12" text-anchor="middle">C1</text>
+
+    <!-- Row labels -->
+    <text x="-16" y="27" fill="#b66343" font-family="ui-monospace,monospace" font-size="12" text-anchor="end">A0</text>
+    <text x="-16" y="71" fill="#b66343" font-family="ui-monospace,monospace" font-size="12" text-anchor="end">A1</text>
+    <text x="-16" y="115" fill="#697161" font-family="ui-monospace,monospace" font-size="12" text-anchor="end">B0</text>
+    <text x="-16" y="159" fill="#697161" font-family="ui-monospace,monospace" font-size="12" text-anchor="end">B1</text>
+    <text x="-16" y="203" fill="#8b7355" font-family="ui-monospace,monospace" font-size="12" text-anchor="end">C0</text>
+    <text x="-16" y="247" fill="#8b7355" font-family="ui-monospace,monospace" font-size="12" text-anchor="end">C1</text>
+
+    <!-- Background matrix -->
+    <rect x="0" y="0" width="264" height="264" fill="#f8f4ec" stroke="#a9a296"/>
+    <!-- Grid lines -->
+    <path d="M44 0v264M88 0v264M132 0v264M176 0v264M220 0v264M0 44h264M0 88h264M0 132h264M0 176h264M0 220h264" stroke="#ded8cd"/>
+
+    <!-- Block A lower triangle -->
+    <rect x="2" y="2" width="40" height="40" fill="#b66343" opacity=".88"/>
+    <rect x="2" y="46" width="40" height="40" fill="#b66343" opacity=".88"/>
+    <rect x="46" y="46" width="40" height="40" fill="#b66343" opacity=".88"/>
+
+    <!-- Masked cross-doc region under B/C -->
+    <rect x="2" y="90" width="84" height="172" fill="#e2ddd3" opacity=".75"/>
+    <rect x="90" y="178" width="84" height="84" fill="#e2ddd3" opacity=".75"/>
+    <text x="44" y="182" fill="#8a8378" font-family="ui-monospace,monospace" font-size="13" text-anchor="middle">-inf</text>
+    <text x="132" y="226" fill="#8a8378" font-family="ui-monospace,monospace" font-size="13" text-anchor="middle">-inf</text>
+
+    <!-- Block B lower triangle -->
+    <rect x="90" y="90" width="40" height="40" fill="#697161" opacity=".9"/>
+    <rect x="90" y="134" width="40" height="40" fill="#697161" opacity=".9"/>
+    <rect x="134" y="134" width="40" height="40" fill="#697161" opacity=".9"/>
+
+    <!-- Block C lower triangle -->
+    <rect x="178" y="178" width="40" height="40" fill="#8b7355" opacity=".9"/>
+    <rect x="178" y="222" width="40" height="40" fill="#8b7355" opacity=".9"/>
+    <rect x="222" y="222" width="40" height="40" fill="#8b7355" opacity=".9"/>
+
+    <!-- Block boundaries -->
+    <rect x="0" y="0" width="88" height="88" fill="none" stroke="#b66343" stroke-width="2"/>
+    <rect x="88" y="88" width="88" height="88" fill="none" stroke="#697161" stroke-width="2"/>
+    <rect x="176" y="176" width="88" height="88" fill="none" stroke="#8b7355" stroke-width="2"/>
+  </g>
+
+  <text x="885" y="557" fill="#68675f" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="14" text-anchor="middle">same_doc &amp; causal：每首诗内部因果可见，跨诗彻底屏蔽</text>
+  <text x="70" y="635" fill="#8a8378" font-family="ui-monospace,monospace" font-size="12" letter-spacing="1">PACK_XY_SEGMENTS · RESET POS_IDS · BLOCK-CAUSAL ATTENTION MASK</text>
+</svg>

@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0 10 5 0 10Z" fill="#9b958a"/>
+    </marker>
+    <marker id="arrow-accent" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0 10 5 0 10Z" fill="#b66343"/>
+    </marker>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" stroke="#ded8cd" stroke-width=".7" opacity=".55"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="700" fill="#f3efe6"/>
+  <rect x="30" y="30" width="1140" height="640" fill="url(#grid)" stroke="#d4cdc0"/>
+  <text x="70" y="85" fill="#777168" font-family="ui-monospace,monospace" font-size="15" letter-spacing="3">01 / FROM SCALAR MICROGPT TO MODERN TRANSFORMER</text>
+  <text x="70" y="127" fill="#292824" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="29" font-weight="600">从 75 行标量计算图，升级到 141 万参数现代 GPT</text>
+
+  <!-- Left Panel: my_gpt -->
+  <rect x="70" y="165" width="430" height="430" fill="#eee8dd" stroke="#d4cdc0"/>
+  <text x="100" y="205" fill="#a45d42" font-family="ui-monospace,monospace" font-size="14" letter-spacing="2">STAGE 0 · MY_GPT</text>
+  <text x="375" y="205" fill="#777168" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="15">纯 Python 起手</text>
+
+  <!-- Scalar autograd graph -->
+  <g stroke="#8c857a" stroke-width="1.5" fill="none" marker-end="url(#arrow)">
+    <path d="M150 280 232 315"/>
+    <path d="M150 368 232 332"/>
+    <path d="M276 324 345 324"/>
+    <path d="M276 334 348 400"/>
+    <path d="M394 324 440 360"/>
+    <path d="M394 405 440 374"/>
+  </g>
+  <g stroke="#b66343" stroke-width="1.5" stroke-dasharray="4 4" fill="none" marker-end="url(#arrow-accent)">
+    <path d="M440 342C395 270 210 245 135 256"/>
+  </g>
+  <text x="290" y="252" fill="#a45d42" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="12" text-anchor="middle">.backward() 拓扑逆序回传梯度</text>
+
+  <g font-family="ui-monospace,monospace" font-size="13" text-anchor="middle">
+    <circle cx="130" cy="276" r="22" fill="#f8f4ec" stroke="#a9a296"/><text x="130" y="281" fill="#393732">Val a</text>
+    <circle cx="130" cy="372" r="22" fill="#f8f4ec" stroke="#a9a296"/><text x="130" y="377" fill="#393732">Val b</text>
+    <circle cx="255" cy="324" r="22" fill="#f8f4ec" stroke="#b66343"/><text x="255" y="329" fill="#a45d42">a * b</text>
+    <circle cx="372" cy="324" r="22" fill="#f8f4ec" stroke="#697161"/><text x="372" y="329" fill="#4f5648">ReLU</text>
+    <circle cx="372" cy="408" r="22" fill="#f8f4ec" stroke="#697161"/><text x="372" y="413" fill="#4f5648">+ c</text>
+    <circle cx="456" cy="366" r="24" fill="#b66343" opacity=".9"/><text x="456" y="371" fill="#f8f4ec">Loss</text>
+  </g>
+
+  <!-- Spec box left -->
+  <rect x="100" y="465" width="370" height="100" fill="#f8f4ec" stroke="#c9c2b6"/>
+  <text x="120" y="495" fill="#292824" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="15" font-weight="600">最小 GPT 骨架（4,192 参数）</text>
+  <text x="120" y="523" fill="#68675f" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="13">· 1 层 / 4 头 / 16 维 / 窗口 16</text>
+  <text x="120" y="547" fill="#68675f" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="13">· 27 字符词表 · 英文人名 names.txt 祛魅</text>
+
+  <!-- Center Transition -->
+  <path d="M515 380h85" stroke="#b66343" stroke-width="2" marker-end="url(#arrow-accent)"/>
+  <text x="557" y="352" fill="#a45d42" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="13" font-weight="600" text-anchor="middle">PyTorch</text>
+  <text x="557" y="404" fill="#777168" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="12" text-anchor="middle">向量化升级</text>
+
+  <!-- Right Panel: poetry_gpt -->
+  <rect x="615" y="165" width="515" height="430" fill="#e9e8df" stroke="#d4cdc0"/>
+  <text x="645" y="205" fill="#697161" font-family="ui-monospace,monospace" font-size="14" letter-spacing="2">STAGE 1 · POETRY_GPT</text>
+  <text x="980" y="205" fill="#777168" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="15">全唐诗底座</text>
+
+  <!-- Input Embedding & Weight Tying -->
+  <rect x="645" y="226" width="455" height="44" fill="#f8f4ec" stroke="#a9a296"/>
+  <text x="872" y="253" fill="#292824" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="14" text-anchor="middle">字符级词表（4,748 → 4,775）· 与输出头 Weight Tying 共享权重</text>
+
+  <path d="M872 270v18" stroke="#9b958a" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- 4x Transformer Block -->
+  <rect x="645" y="294" width="455" height="190" fill="#f4f0e6" stroke="#697161" stroke-width="1.5"/>
+  <text x="665" y="318" fill="#4f5648" font-family="ui-monospace,monospace" font-size="13" font-weight="600">TRANSFORMER BLOCK × 4（4 头 · 128 维 · 窗口 128）</text>
+
+  <!-- Attention sub-block -->
+  <rect x="665" y="332" width="415" height="62" fill="#f8f4ec" stroke="#b66343"/>
+  <text x="682" y="357" fill="#a45d42" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="14" font-weight="600">Pre-RMSNorm → Causal Attention + 残差</text>
+  <text x="682" y="380" fill="#68675f" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="12">配备 QK-Norm 稳分值 · RoPE 旋转编码 · Doc Mask 防串诗</text>
+
+  <!-- SwiGLU sub-block -->
+  <rect x="665" y="406" width="415" height="62" fill="#f8f4ec" stroke="#697161"/>
+  <text x="682" y="431" fill="#4f5648" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="14" font-weight="600">Pre-RMSNorm → SwiGLU MLP + 残差</text>
+  <text x="682" y="454" fill="#68675f" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="12">门控激活 SiLU(W_gate·x) ⊙ W_up·x（实测比 8 专家 MoE 更稳）</text>
+
+  <path d="M872 484v18" stroke="#9b958a" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Output Head -->
+  <rect x="645" y="508" width="455" height="58" fill="#697161" opacity=".92"/>
+  <text x="872" y="534" fill="#f8f4ec" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="14" font-weight="600" text-anchor="middle">Final RMSNorm → LM Head（共享 wte.weight）</text>
+  <text x="872" y="555" fill="#e9e8df" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="12" text-anchor="middle">20,453 首全唐诗预训练 · 1,411,968 → 最终 1,415,424 参数</text>
+
+  <text x="70" y="635" fill="#8a8378" font-family="ui-monospace,monospace" font-size="12" letter-spacing="1">4,192 PARAMS (PURE PYTHON)  →  1,415,424 PARAMS (ROPE + QK-NORM + SWIGLU + WEIGHT TYING)</text>
+</svg>

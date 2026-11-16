@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0 10 5 0 10Z" fill="#9b958a"/>
+    </marker>
+    <marker id="arrow-accent" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0 10 5 0 10Z" fill="#b66343"/>
+    </marker>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" stroke="#ded8cd" stroke-width=".7" opacity=".55"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="700" fill="#f3efe6"/>
+  <rect x="30" y="30" width="1140" height="640" fill="url(#grid)" stroke="#d4cdc0"/>
+  <text x="70" y="85" fill="#777168" font-family="ui-monospace,monospace" font-size="15" letter-spacing="3">03 / GRPO WITH VERIFIABLE RULE JUDGE</text>
+  <text x="70" y="127" fill="#292824" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="29" font-weight="600">GRPO 强化学习：靠可验证规则裁判纠偏古诗格律</text>
+
+  <!-- Left: Prompt & Group Sampling -->
+  <rect x="70" y="165" width="265" height="430" fill="#eee8dd" stroke="#d4cdc0"/>
+  <text x="92" y="205" fill="#a45d42" font-family="ui-monospace,monospace" font-size="14" letter-spacing="2">1. GROUP ROLLOUT</text>
+
+  <rect x="92" y="232" width="221" height="82" fill="#f8f4ec" stroke="#a9a296"/>
+  <text x="202" y="260" fill="#292824" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="14" font-weight="600" text-anchor="middle">随机抽取考题 Prompt</text>
+  <text x="202" y="284" fill="#68675f" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="12" text-anchor="middle">五七言绝句律诗 / 3,000 合成藏头</text>
+  <text x="202" y="303" fill="#a45d42" font-family="ui-monospace,monospace" font-size="11" text-anchor="middle">例：藏头：春夏秋冬</text>
+
+  <path d="M202 314v32" stroke="#b66343" stroke-width="1.5" marker-end="url(#arrow-accent)"/>
+
+  <rect x="92" y="352" width="221" height="106" fill="#f8f4ec" stroke="#b66343"/>
+  <text x="202" y="382" fill="#a45d42" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="15" font-weight="600" text-anchor="middle">同题采样 G = 8 首</text>
+  <text x="202" y="408" fill="#68675f" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="12" text-anchor="middle">略提高温度 (T=0.9, top_k=30)</text>
+  <text x="202" y="429" fill="#68675f" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="12" text-anchor="middle">鼓励策略探索更工整的写法</text>
+  <text x="202" y="448" fill="#777168" font-family="ui-monospace,monospace" font-size="11" text-anchor="middle">无需 Critic 价值网络</text>
+
+  <rect x="92" y="482" width="221" height="86" fill="#e4dfd4" stroke="#c7c0b3"/>
+  <text x="202" y="510" fill="#292824" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="13" font-weight="600" text-anchor="middle">策略模型 π_θ 正在学习</text>
+  <text x="202" y="534" fill="#68675f" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="12" text-anchor="middle">每步 4 题 × 8 候选 = 32 条</text>
+  <text x="202" y="553" fill="#68675f" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="12" text-anchor="middle">总共微调 300 步</text>
+
+  <path d="M335 380h35" stroke="#9b958a" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <!-- Middle: Rule Judge & Group Relative Advantage -->
+  <rect x="375" y="165" width="465" height="430" fill="#e9e8df" stroke="#d4cdc0"/>
+  <text x="398" y="205" fill="#697161" font-family="ui-monospace,monospace" font-size="14" letter-spacing="2">2. VERIFIABLE JUDGE &amp; ADVANTAGE</text>
+
+  <!-- Rule criteria box -->
+  <rect x="398" y="226" width="419" height="88" fill="#f8f4ec" stroke="#697161"/>
+  <text x="415" y="252" fill="#4f5648" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="14" font-weight="600">铁面规则裁判（grpo_reward.py）：零人工标注</text>
+  <text x="415" y="276" fill="#68675f" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="12">✓ 句数（4/8 句）与每句字数（5/7 字）  ✓ 逗号+句号对联行</text>
+  <text x="415" y="298" fill="#68675f" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="12">✓ 藏头首字命中率  ✓ &lt;EOS&gt; 正常收尾  ✗ 叠字复读直接扣分</text>
+
+  <!-- Group comparison bars -->
+  <text x="398" y="344" fill="#292824" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="13" font-weight="600">组内相对优势 A_i = (r_i - mean) / std：优胜劣汰</text>
+
+  <!-- Center zero axis at x=675 -->
+  <line x1="675" y1="358" x2="675" y2="516" stroke="#8c857a" stroke-width="1.2" stroke-dasharray="3 3"/>
+  <text x="675" y="534" fill="#777168" font-family="ui-monospace,monospace" font-size="11" text-anchor="middle">组内均值 (A = 0)</text>
+
+  <!-- Sample rows (labels at 398..515, negative bars in 575..675, positive bars in 675..770) -->
+  <text x="398" y="384" fill="#393732" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="12">诗 #1 格式+藏头全对</text>
+  <rect x="675" y="368" width="90" height="22" fill="#697161" opacity=".9"/>
+  <text x="772" y="384" fill="#4f5648" font-family="ui-monospace,monospace" font-size="12">+1.42 ↑</text>
+
+  <text x="398" y="422" fill="#393732" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="12">诗 #2 格律工整收尾</text>
+  <rect x="675" y="406" width="58" height="22" fill="#697161" opacity=".68"/>
+  <text x="740" y="422" fill="#4f5648" font-family="ui-monospace,monospace" font-size="12">+0.85 ↑</text>
+
+  <text x="398" y="460" fill="#393732" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="12">诗 #5 五言多出一字</text>
+  <rect x="620" y="444" width="55" height="22" fill="#b66343" opacity=".65"/>
+  <text x="612" y="460" fill="#a45d42" font-family="ui-monospace,monospace" font-size="12" text-anchor="end">-0.70 ↓</text>
+
+  <text x="398" y="498" fill="#393732" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="12">诗 #8 叠字复读+乱行</text>
+  <rect x="582" y="482" width="93" height="22" fill="#b66343" opacity=".9"/>
+  <text x="574" y="498" fill="#a45d42" font-family="ui-monospace,monospace" font-size="12" text-anchor="end">-1.35 ↓</text>
+
+  <rect x="398" y="548" width="419" height="32" fill="#f8f4ec" stroke="#c9c2b6"/>
+  <text x="607" y="569" fill="#4f5648" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="13" font-weight="600" text-anchor="middle">28 道未见考题实测：格式合规率 71.4% → 100.0%</text>
+
+  <path d="M840 380h35" stroke="#b66343" stroke-width="1.5" marker-end="url(#arrow-accent)"/>
+
+  <!-- Right: KL Constraint -->
+  <rect x="880" y="165" width="250" height="430" fill="#eee8dd" stroke="#d4cdc0"/>
+  <text x="902" y="205" fill="#a45d42" font-family="ui-monospace,monospace" font-size="14" letter-spacing="2">3. KL CONSTRAINT</text>
+
+  <rect x="902" y="242" width="206" height="92" fill="#f8f4ec" stroke="#697161"/>
+  <text x="1005" y="272" fill="#292824" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="14" font-weight="600" text-anchor="middle">冻结 SFT 参考模型</text>
+  <text x="1005" y="296" fill="#68675f" font-family="ui-monospace,monospace" font-size="12" text-anchor="middle">π_ref (no_grad)</text>
+  <text x="1005" y="318" fill="#68675f" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="12" text-anchor="middle">保留原有唐诗语感</text>
+
+  <path d="M1005 334v52" stroke="#b66343" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrow-accent)"/>
+  <text x="1005" y="366" fill="#a45d42" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="12" text-anchor="middle">KL 散度 (β = 0.04)</text>
+
+  <rect x="902" y="392" width="206" height="176" fill="#f8f4ec" stroke="#b66343"/>
+  <text x="1005" y="424" fill="#a45d42" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="14" font-weight="600" text-anchor="middle">为什么必须拴一根绳？</text>
+  <text x="918" y="454" fill="#68675f" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="12">只看规则奖励，模型会学会</text>
+  <text x="918" y="476" fill="#68675f" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="12">凑字数、写废话来“刷分”。</text>
+  <text x="918" y="506" fill="#292824" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="12">KL 惩罚拉住分布不跑偏，</text>
+  <text x="918" y="528" fill="#292824" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="12">让“诗意”与“规矩”共存。</text>
+  <text x="1005" y="555" fill="#4f5648" font-family="ui-monospace,monospace" font-size="11" text-anchor="middle">avg reward: 0.98 → 1.41</text>
+
+  <text x="70" y="635" fill="#8a8378" font-family="ui-monospace,monospace" font-size="12" letter-spacing="1">NO CRITIC MODEL · GROUP RELATIVE ADVANTAGE · KL PENALTY KEEPS POETIC FLUENCY</text>
+</svg>
