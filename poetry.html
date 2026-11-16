@@ -1,0 +1,249 @@
+---
+layout: default
+title: 古诗助手
+description: 在浏览器本地运行的微型古诗 GPT 对话助手。
+permalink: /poetry/
+---
+
+<section class="simple-page-hero wrap">
+  <p class="section-code">LAB / MICROGPT</p>
+  <h1>唐诗小助手<span class="heading-dot">.</span></h1>
+  <p class="page-motto">1.41M 参数 · RoPE + SwiGLU + QK-Norm · 纯浏览器端 KV Cache 推理</p>
+</section>
+
+<section class="wrap" style="padding-bottom: 90px;">
+  <style>
+    .poetry-shell { max-width: 860px; }
+    .poetry-status {
+      display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+      padding: 10px 14px; border: 1px solid var(--line); background: var(--panel);
+      font-family: var(--mono); font-size: 12px; color: var(--muted); margin-bottom: 14px;
+    }
+    .poetry-toolbar {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 14px;
+    }
+    .poetry-chip {
+      border: 1px solid var(--line); background: var(--panel); color: var(--muted);
+      padding: 6px 12px; font-family: var(--mono); font-size: 12px; cursor: pointer;
+    }
+    .poetry-chip:hover { border-color: var(--accent); color: var(--ink); }
+    .poetry-chip.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .poetry-quick { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .poetry-qbtn {
+      border: 1px solid var(--line); background: var(--panel); color: var(--muted);
+      padding: 5px 12px; border-radius: 999px; font-size: 13px;
+    }
+    .poetry-qbtn:hover { border-color: var(--accent); color: var(--accent); }
+    .poetry-chat {
+      border: 1px solid var(--line); background: var(--panel);
+      min-height: 360px; max-height: 55vh; overflow-y: auto;
+      padding: 20px; display: flex; flex-direction: column; gap: 16px;
+    }
+    .p-msg { display: flex; flex-direction: column; max-width: 86%; gap: 4px; }
+    .p-msg.user { align-self: flex-end; align-items: flex-end; }
+    .p-msg.bot { align-self: flex-start; align-items: flex-start; }
+    .p-role { font-family: var(--mono); font-size: 11px; color: var(--faint); }
+    .p-bubble { padding: 12px 16px; white-space: pre-wrap; word-break: break-word; }
+    .p-msg.user .p-bubble { background: var(--ink); color: var(--bg); }
+    .p-msg.bot .p-bubble {
+      background: var(--bg); border: 1px solid var(--line);
+      font-family: var(--serif); font-size: 18px; line-height: 1.9;
+    }
+    .p-msg.bot .p-bubble.plain { font-family: var(--sans); font-size: 15px; line-height: 1.7; }
+    .p-meta { font-family: var(--mono); font-size: 11px; color: var(--faint); }
+    .poetry-form {
+      margin-top: 14px; display: flex; gap: 10px; align-items: center;
+      border: 1px solid var(--line); background: var(--panel); padding: 8px 10px;
+    }
+    .poetry-form input[type="text"] {
+      flex: 1; border: 0; background: transparent; color: var(--ink); font-size: 15px;
+      outline: none; padding: 6px;
+    }
+  </style>
+
+  <div class="poetry-shell">
+    <div class="poetry-status">
+      <span id="poetryModelStatus">正在加载本地古诗模型（约 1.4 MB）...</span>
+      <span id="poetryPerfStatus">零后端 · 直接在你的浏览器里推理</span>
+    </div>
+
+    <div class="poetry-toolbar">
+      <label class="poetry-chip">
+        温度 <input id="poetryTemp" type="range" min="0.3" max="1.1" step="0.05" value="0.7" style="width:72px;vertical-align:middle;">
+        <span id="poetryTempVal">0.70</span>
+      </label>
+      <button id="poetryBestBtn" class="poetry-chip active" type="button">格律优选 (4选1)</button>
+    </div>
+
+    <div class="poetry-quick">
+      <button class="poetry-qbtn" type="button" data-prompt="你好">你好</button>
+      <button class="poetry-qbtn" type="button" data-prompt="帮我写一首关于秋夜的五言绝句">秋夜 · 五言绝句</button>
+      <button class="poetry-qbtn" type="button" data-prompt="给我来一首七言绝句吧">自由发挥 · 七言绝句</button>
+      <button class="poetry-qbtn" type="button" data-prompt="帮我写一首藏头诗，用春夏秋冬">藏头 · 春夏秋冬</button>
+      <button class="poetry-qbtn" type="button" data-prompt="接着这句往下写：明月出天山，">续写 · 明月出天山</button>
+    </div>
+
+    <div id="poetryChatBox" class="poetry-chat" aria-live="polite">
+      <div class="p-msg bot">
+        <span class="p-role">唐诗小助手</span>
+        <div class="p-bubble plain">你好！我是杨少侠从零训练的 141 万参数古诗小模型（Pre-training + 口语 SFT 微调）。模型权重完全在你的浏览器本地加载运行，试试直接用大白话让我作诗吧。</div>
+      </div>
+    </div>
+
+    <form id="poetryChatForm" class="poetry-form">
+      <input id="poetryInput" type="text" placeholder="试试：帮我写一首关于明月的五言绝句 / 你好 / 藏头：风花雪月" autocomplete="off">
+      <button id="poetrySendBtn" class="button" type="submit" disabled>发送</button>
+    </form>
+  </div>
+</section>
+
+<script type="module">
+  import { PoetryGPTJS } from "{{ '/assets/poetry/poetry-engine.js' | relative_url }}";
+
+  const chatBox = document.getElementById("poetryChatBox");
+  const form = document.getElementById("poetryChatForm");
+  const input = document.getElementById("poetryInput");
+  const sendBtn = document.getElementById("poetrySendBtn");
+  const statusEl = document.getElementById("poetryModelStatus");
+  const perfEl = document.getElementById("poetryPerfStatus");
+  const tempInput = document.getElementById("poetryTemp");
+  const tempVal = document.getElementById("poetryTempVal");
+  const bestBtn = document.getElementById("poetryBestBtn");
+
+  let engine = null;
+  let useBestOf = true;
+  let busy = false;
+
+  tempInput.addEventListener("input", () => {
+    tempVal.textContent = Number(tempInput.value).toFixed(2);
+  });
+  bestBtn.addEventListener("click", () => {
+    useBestOf = !useBestOf;
+    bestBtn.classList.toggle("active", useBestOf);
+  });
+
+  function scorePoemSimple(prompt, text) {
+    const clean = text.trim();
+    if (!clean) return -10;
+    const clauses = clean.split(/[，。！？\n]+/).filter(Boolean);
+    const lines = clean.split("\n").filter((x) => x.trim());
+    let score = 0;
+    let targetClauses = 4;
+    let targetLen = 5;
+    if (prompt.includes("七言")) targetLen = 7;
+    if (prompt.includes("律诗")) targetClauses = 8;
+
+    if (clauses.length === targetClauses) score += 1.0;
+    else score -= 0.25 * Math.abs(clauses.length - targetClauses);
+
+    const lenMatch = clauses.filter((c) => c.length === targetLen).length;
+    score += 0.8 * (lenMatch / Math.max(1, targetClauses));
+    if (lines.length === targetClauses / 2 && lines.every((l) => /^[^，。！？]+，[^，。！？]+[。！？]$/.test(l))) {
+      score += 0.6;
+    }
+    const chars = [...clean.replace(/[，。！？\n]/g, "")];
+    for (let i = 1; i < chars.length; i++) {
+      if (chars[i] === chars[i - 1]) score -= 0.35;
+    }
+    return score;
+  }
+
+  function addMsg(role, text, plain = false) {
+    const wrap = document.createElement("div");
+    wrap.className = `p-msg ${role}`;
+    const roleEl = document.createElement("span");
+    roleEl.className = "p-role";
+    roleEl.textContent = role === "user" ? "你" : "唐诗小助手";
+    const bubble = document.createElement("div");
+    bubble.className = `p-bubble${plain ? " plain" : ""}`;
+    bubble.textContent = text;
+    const meta = document.createElement("span");
+    meta.className = "p-meta";
+    wrap.append(roleEl, bubble, meta);
+    chatBox.appendChild(wrap);
+    chatBox.scrollTop = chatBox.scrollHeight;
+    return { bubble, meta };
+  }
+
+  async function sendPrompt(raw) {
+    if (!engine || busy) return;
+    const prompt = raw.trim();
+    if (!prompt) return;
+
+    busy = true;
+    sendBtn.disabled = true;
+    addMsg("user", prompt, true);
+    const { bubble, meta } = addMsg("bot", "正在思索...", true);
+
+    const temperature = Number(tempInput.value);
+    const t0 = performance.now();
+    const isGreeting = /你好|嗨|在吗|你是谁|名字|做什么|怎么用|帮助|谢谢|再见|拜拜|真棒|厉害/.test(prompt);
+
+    try {
+      let output = "";
+      if (useBestOf && !isGreeting) {
+        const candidates = [];
+        for (let i = 0; i < 4; i++) {
+          const cand = await engine.generateStream(prompt, { temperature, topK: 20, yieldPerToken: false });
+          candidates.push({ text: cand, score: scorePoemSimple(prompt, cand) });
+        }
+        candidates.sort((a, b) => b.score - a.score);
+        const bestText = candidates[0].text;
+        bubble.classList.remove("plain");
+        bubble.textContent = "";
+        for (const ch of bestText) {
+          bubble.textContent += ch;
+          chatBox.scrollTop = chatBox.scrollHeight;
+          await new Promise((r) => setTimeout(r, 18));
+        }
+        output = bestText;
+      } else {
+        if (!isGreeting) bubble.classList.remove("plain");
+        bubble.textContent = "";
+        output = await engine.generateStream(
+          prompt,
+          { temperature, topK: 20, yieldPerToken: true },
+          (_ch, full) => {
+            bubble.textContent = full;
+            chatBox.scrollTop = chatBox.scrollHeight;
+          }
+        );
+      }
+      const dt = ((performance.now() - t0) / 1000).toFixed(2);
+      meta.textContent = `${useBestOf && !isGreeting ? "4选1优选 · " : "流式直出 · "}耗时 ${dt}s`;
+      perfEl.textContent = `最近生成耗时 ${dt}s`;
+    } catch (err) {
+      bubble.textContent = "生成失败：" + err.message;
+    } finally {
+      busy = false;
+      sendBtn.disabled = false;
+      input.focus();
+    }
+  }
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const v = input.value;
+    input.value = "";
+    sendPrompt(v);
+  });
+
+  document.querySelectorAll(".poetry-qbtn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (!busy && engine) sendPrompt(btn.dataset.prompt);
+    });
+  });
+
+  try {
+    const t0 = performance.now();
+    engine = await PoetryGPTJS.load(
+      "{{ '/assets/poetry/model/poetry_model.json' | relative_url }}",
+      "{{ '/assets/poetry/model/poetry_weights.bin' | relative_url }}"
+    );
+    const dt = ((performance.now() - t0) / 1000).toFixed(2);
+    statusEl.textContent = `模型已就绪（词表 ${engine.tokenizer.vocabSize} 字 · 加载 ${dt}s）`;
+    sendBtn.disabled = false;
+  } catch (err) {
+    statusEl.textContent = "模型加载失败：" + err.message;
+  }
+</script>
